@@ -50,13 +50,17 @@
                                 <div class="col-md-6">
                                     <h4>Current Command</h4>
                                     <?php if($model->current_command['id'] == NULL): ?>
-                                        <p>No command selected, currently idle!</p>
+                                        <div id="command-info">
+                                            <p>No command selected, currently idle!</p>
+                                        </div>
                                     <?php else: ?>
-                                        <h1 style="margin-top: 0; margin-bottom: 0;"><?=$model->current_command['name']?> <a href="!#" class="btn btn-danger pull-right">Stop</a></h1>
-                                        <p>
-                                            <?=$model->current_command['description']?>
-                                        </p>
-                                        <h4><span class="text-success">3405 runs</span></h4>
+                                        <div id="command-info">
+                                            <h1 style="margin-top: 0; margin-bottom: 0;"><?=$model->current_command['name']?> <a href="#!" class="btn btn-danger pull-right" id="stop-command-btn">Stop</a><span class="pull-right small" style="font-size: 14px; margin-top: 16px; margin-right: 10px;">CURRENTLY RUNNING</span></h1>
+                                            <p>
+                                                <?=$model->current_command['description']?>
+                                            </p>
+                                            <h4><span class="text-success">3405 runs</span></h4>
+                                        </div>
                                     <?php endif; ?>
                                 </div>
                                 <div class="col-md-6">
@@ -64,17 +68,18 @@
                                     <form action="" class="form-horizontal row-border">
                                         <div class="form-group">
                                             <div class="col-sm-12">
-                                                <select class="form-control" placeholder="">
+                                                <select class="form-control" placeholder="" id="command_selection">
+                                                    <?php if($model->current_command['id'] == NULL): ?>
+                                                        <option selected="selected" disabled="disabled">Select a command</option>
+                                                    <?php endif; ?>
                                                     <?php foreach($model->commands as $command): ?>
-                                                        <?php if($model->current_command['id'] == NULL): ?>
-                                                            <option selected="selected" disabled="disabled">Select a command</option>
-                                                        <?php endif; ?>
-                                                        <option <?php if($model->current_command['id'] == $command['id']){ echo "selected=\"selected\""; } ?>><?=$command['name']?></option>
+                                                        <option <?php if($model->current_command['id'] == $command['id']){ echo "selected=\"selected\""; } ?> value="<?=$command['id']?>"><?=$command['name']?></option>
                                                     <?php endforeach; ?>
                                                 </select>
                                             </div>
                                         </div>
-                                        <button class="btn-primary btn pull-right">Do it!</button>
+                                        <a href="#!" class="btn-primary btn pull-right" id="change-command-btn">Do it!</a>
+                                        <a href="/command/addcommand" style="margin-right: 10px;" class="btn-default btn pull-right" id="change-command-btn">Create New Command</a>
                                     </form>
                                 </div>
                             </div>
@@ -183,3 +188,65 @@
         </div>
     </div>
 </div>
+<script>
+    $(document).ready(function(){
+
+        $('#stop-command-btn').click(function(){
+            stopCommand();
+        });
+
+        $('#change-command-btn').click(function(){
+            changeCommand();
+        });
+
+        function stopCommand()
+        {
+            $.ajax({
+                type: 'POST',
+                url: '/command/stop',
+                data: { },
+                beforeSend:function(){
+
+                },
+                success:function(data){
+                    //Remove selected option from command selection
+                    document.getElementById('command_selection').selectedIndex = -1;
+                    $('#command_selection').prepend('<option selected="selected" disabled="disabled">Select a command</option>');
+
+                    $('#command-info').html("<p>No command selected</p>");
+                },
+                error:function(){
+                    // failed request; give feedback to user
+                    alert('Stop request failed!');
+                }
+            });
+        }
+
+        function changeCommand()
+        {
+            var newCommandId = $('#command_selection').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '/command/change',
+                data: { command_id: newCommandId  },
+                dataType: 'json',
+                beforeSend:function(){
+
+                },
+                success:function(response){
+                    //Remove selected option from command selection
+                    $('#command-info').html('<h1 style="margin-top: 0; margin-bottom: 0;">' + response.name + '<a href="#!" class="btn btn-danger pull-right" id="stop-command-btn">Stop</a><span class="pull-right small" style="font-size: 14px; margin-top: 16px; margin-right: 10px;">CURRENTLY RUNNING</span></h1> <p>' + response.description + '</p> <h4><span class="text-success">3405 runs</span></h4>');
+                    $('#stop-command-btn').click(function(){
+                        stopCommand();
+                    });
+                },
+                error:function(){
+                    // failed request; give feedback to user
+                    alert('Change request failed!');
+                }
+            });
+        }
+    });
+
+</script>

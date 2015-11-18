@@ -114,4 +114,30 @@ class Command extends BaseController
             $this->Redirect('command');
         }
     }
+
+    protected function Stop()
+    {
+        //If user isn't logged in redirect to login,
+        //if user is logged in check permissions for controller
+        parent::CheckLoggedIn();
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+            //POST
+            $model = new CommandModel("Stop", true);
+        }
+    }
+
+    protected function Change()
+    {
+        //If user isn't logged in redirect to login,
+        //if user is logged in check permissions for controller
+        parent::CheckLoggedIn();
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+            //POST
+            $model = new CommandModel("Change", true);
+        }
+    }
 }

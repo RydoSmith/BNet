@@ -183,4 +183,62 @@ class CommandModel extends BaseModel
             $stmt->closeCursor();
         }
     }
+
+    public function Stop_POST()
+    {
+
+        //Insert record
+        $sql = "UPDATE state SET
+          command_id=NULL
+          WHERE id=:id";
+
+        $id = 1;
+        if ($stmt = $this->database->prepare($sql))
+        {
+//            $this->database->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+//            $this->database->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+            $stmt->bindParam(':id', $id, PDO::PARAM_STR);
+            $stmt->execute();
+            $stmt->closeCursor();
+        }
+
+        exit();
+    }
+
+    public function Change_POST()
+    {
+        $newCommandId = $_POST['command_id'];
+
+        //Update record
+        $sql = "UPDATE state SET
+          command_id=:command_id
+          WHERE id=:id";
+
+        $id = 1;
+        if ($stmt = $this->database->prepare($sql))
+        {
+//            $this->database->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+//            $this->database->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+            $stmt->bindParam(':command_id', $newCommandId, PDO::PARAM_STR);
+            $stmt->bindParam(':id', $id, PDO::PARAM_STR);
+            $stmt->execute();
+            $stmt->closeCursor();
+        }
+
+        //get current command
+        $command = null;
+        $sql = "SELECT * FROM commands WHERE id=:command_id";
+        if($stmt = $this->database->prepare($sql))
+        {
+            $stmt->bindParam(':command_id', $newCommandId, PDO::PARAM_STR);
+
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $command = $row;
+            $stmt->closeCursor();
+        }
+
+        echo json_encode($command, JSON_FORCE_OBJECT);
+        exit();
+    }
 }

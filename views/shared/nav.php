@@ -7,7 +7,7 @@
 				</span>
             </a>
 		</span>
-        <a class="navbar-brand" href="/Dashboard">BotNet</a>
+        <a class="navbar-brand" href="/Dashboard">BotNet v1.0</a>
     </div>
     <ul class="nav navbar-nav toolbar pull-right">
         <li class="dropdown toolbar-icon-bg">
