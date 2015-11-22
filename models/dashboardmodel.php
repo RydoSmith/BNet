@@ -53,4 +53,31 @@ class DashboardModel extends BaseModel
             $stmt->closeCursor();
         }
     }
+
+    public function GetData()
+    {
+        $data = array();
+
+        //Get active session count
+        $data["active_sessions"] = $this->database->query('SELECT COUNT(*) FROM sessions WHERE is_active = 1')->fetchColumn();
+        $data["total_sessions"] = $this->database->query('SELECT COUNT(*) FROM sessions')->fetchColumn();
+        $data["total_injections"] = $this->database->query('SELECT injections FROM state WHERE id=1')->fetchColumn();
+
+        echo json_encode($data, JSON_FORCE_OBJECT);
+        exit();
+    }
+
+    public function CheckInactive()
+    {
+        //get all active sessions
+        $sql = "UPDATE sessions SET is_active=0 WHERE is_active=1 AND last_request <= DATE_SUB(NOW(), INTERVAL 20 SECOND)";
+        if($stmt = $this->database->prepare($sql))
+        {
+            $stmt->execute();
+            $stmt->closeCursor();
+        }
+
+        echo json_encode("success");
+        exit();
+    }
 }

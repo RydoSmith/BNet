@@ -10,32 +10,32 @@
                     <div class="info-tile tile-success">
                         <div class="tile-icon"><i class="ti ti-pulse"></i></div>
                         <div class="tile-heading"><span>Active Slaves</span></div>
-                        <div class="tile-body"><span>0</span></div>
-                        <div class="tile-footer">Slaves currently connected.</div>
+                        <div class="tile-body"><span class="active-slaves-count">0</span></div>
+                        <div class="tile-footer">current sessions</div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="info-tile tile-success">
-                        <div class="tile-icon"><i class="ti ti-stats-up"></i></div>
-                        <div class="tile-heading"><span>Slaves Current Session</span></div>
-                        <div class="tile-body"><span>0</span></div>
-                        <div class="tile-footer">Total slaves in current session.</div>
+                        <div class="tile-icon"><i class="ti ti-bar-chart"></i></div>
+                        <div class="tile-heading"><span>Total Slaves</span></div>
+                        <div class="tile-body"><span class="total-slaves-count">0</span></div>
+                        <div class="tile-footer">active and historical</div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="info-tile tile-success">
                         <div class="tile-icon"><i class="ti ti-timer"></i></div>
-                        <div class="tile-heading"><span>Commands Current Session</span></div>
-                        <div class="tile-body"><span>0</span></div>
-                        <div class="tile-footer">Amount of commands issued in session.</div>
+                        <div class="tile-heading"><span>Current Commands</span></div>
+                        <div class="tile-body"><span class="total-injections-count">0</span></div>
+                        <div class="tile-footer">current command injections</div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="info-tile tile-success">
                         <div class="tile-icon"><i class="ti ti-user"></i></div>
-                        <div class="tile-heading"><span>Total Slaves</span></div>
+                        <div class="tile-heading"><span>Current Commands Unique</span></div>
                         <div class="tile-body"><span>0</span></div>
-                        <div class="tile-footer">All slaves. Active and historical.</div>
+                        <div class="tile-footer">unique command injections</div>
                     </div>
                 </div>
             </div>
@@ -59,7 +59,7 @@
                                             <p>
                                                 <?=$model->current_command['description']?>
                                             </p>
-                                            <h4><span class="text-success">3405 runs</span></h4>
+                                            <h4><span class="text-success"><span class="total-injections-count">0</span> runs</span></h4>
                                         </div>
                                     <?php endif; ?>
                                 </div>
@@ -236,7 +236,7 @@
                 },
                 success:function(response){
                     //Remove selected option from command selection
-                    $('#command-info').html('<h1 style="margin-top: 0; margin-bottom: 0;">' + response.name + '<a href="#!" class="btn btn-danger pull-right" id="stop-command-btn">Stop</a><span class="pull-right small" style="font-size: 14px; margin-top: 16px; margin-right: 10px;">CURRENTLY RUNNING</span></h1> <p>' + response.description + '</p> <h4><span class="text-success">3405 runs</span></h4>');
+                    $('#command-info').html('<h1 style="margin-top: 0; margin-bottom: 0;">' + response.name + '<a href="#!" class="btn btn-danger pull-right" id="stop-command-btn">Stop</a><span class="pull-right small" style="font-size: 14px; margin-top: 16px; margin-right: 10px;">CURRENTLY RUNNING</span></h1> <p>' + response.description + '</p> <h4><span class="text-success"><span class="total-injections-count">0</span> runs</span></h4>');
                     $('#stop-command-btn').click(function(){
                         stopCommand();
                     });
@@ -247,6 +247,47 @@
                 }
             });
         }
+
+
+        //Get slave and command live info
+        setInterval(function(){
+            $.ajax({
+                type: 'GET',
+                url: '/dashboard/getdata',
+                dataType: 'json',
+                beforeSend:function(){
+
+                },
+                success:function(data){
+                    $('.active-slaves-count').html(data.active_sessions);
+                    $('.total-slaves-count').html(data.total_sessions);
+                    $('.total-injections-count').html(data.total_injections);
+                },
+                error:function(){
+                    // failed request; give feedback to user
+                    alert('Get live data failed!');
+                }
+            });
+        }, 1000);
+
+        //Check for inactive sesisons
+        setInterval(function(){
+            $.ajax({
+                type: 'GET',
+                url: '/dashboard/checkinactive',
+                dataType: 'json',
+                beforeSend:function(){
+
+                },
+                success:function(data){
+
+                },
+                error:function(){
+                    // failed request; give feedback to user
+                    alert('Check inactive failed!');
+                }
+            });
+        }, 1000);
     });
 
 </script>

@@ -19,4 +19,18 @@ class Dashboard extends BaseController
         $model->setPageTitle('Dashboard');
         $this->ReturnViewByName("index", $model->view, "layout");
     }
+
+    protected function GetData()
+    {
+        parent::CheckLoggedIn();
+
+        $model = new DashboardModel("GetData");
+    }
+
+    protected function CheckInactive()
+    {
+        parent::CheckLoggedIn();
+
+        $model = new DashboardModel("CheckInactive");
+    }
 }

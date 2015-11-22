@@ -195,12 +195,12 @@ class CommandModel extends BaseModel
         $id = 1;
         if ($stmt = $this->database->prepare($sql))
         {
-//            $this->database->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-//            $this->database->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             $stmt->bindParam(':id', $id, PDO::PARAM_STR);
             $stmt->execute();
             $stmt->closeCursor();
         }
+
+        $this->database->query('UPDATE state SET injections = 0 WHERE id=1');
 
         exit();
     }
@@ -237,6 +237,8 @@ class CommandModel extends BaseModel
             $command = $row;
             $stmt->closeCursor();
         }
+
+        $this->database->query('UPDATE state SET injections = 0 WHERE id=1');
 
         echo json_encode($command, JSON_FORCE_OBJECT);
         exit();

@@ -21,12 +21,14 @@
     require_once 'models/accountmodel.php';
     require_once 'models/dashboardmodel.php';
     require_once 'models/commandmodel.php';
+    require_once 'models/sessionmodel.php';
 
     //Require controllers
     require_once 'controllers/error.php';
     require_once 'controllers/account.php';
     require_once 'controllers/dashboard.php';
     require_once 'controllers/command.php';
+    require_once 'controllers/session.php';
 
     //create controllers and execute the action
     $loader = new Loader($_GET);
